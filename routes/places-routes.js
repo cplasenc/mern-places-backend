@@ -1,5 +1,7 @@
 const express = require('express');
 
+const HttpError = require('../model/http-error');
+
 const router = express.Router();
 
 const DUMMY_PLACES = [
@@ -25,9 +27,7 @@ router.get('/:pid', (req, res, next) => {
 
     if (!place) {
         //return res.status(404).json({ message: 'No se ha encontado ningún lugar' });
-        const error = new Error('No se ha encontrado ningún lugar');
-        error.code = 404;
-        return next(error);
+        return next(new HttpError('No se ha encontrado ningún lugar', 404));
     }
 
     res.json({ place });
@@ -41,9 +41,7 @@ router.get('user/:uid', (req, res, next) => {
 
     if (!place) {
         //return res.status(404).json({ message: 'No se ha encontrado ningún lugar' });
-        const error = new Error('No se ha encontrado ningún lugar');
-        error.code = 404;
-        return next(error);
+        return next(new HttpError('No se ha encontrado ningún lugar', 404));
     }
 
     res.json({ place });
