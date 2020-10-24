@@ -5,9 +5,11 @@ const placesRoutes = require('./routes/places-routes');
 
 const server = express();
 
+server.use(bodyParser.json());
+
 server.use('/api/places', placesRoutes);
 
-server.use((req, res, next) => {
+server.use((error, req, res, next) => {
     if(res.headersSent) {
         return next(error);
     }
