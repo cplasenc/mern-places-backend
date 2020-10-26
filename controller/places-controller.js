@@ -1,6 +1,7 @@
 const uuid = require('uuid').v4;
 const HttpError = require('../model/http-error');
 const { validationResult } = require('express-validator');
+const getCoordsForAddress = require('../util/location');
 
 let DUMMY_PLACES = [
     {
@@ -44,13 +45,20 @@ const getPlacesByUserId = (req, res, next) => {
     res.json({ places });
 };
 
-const createPlace = (req, res, next) => {
+const createPlace = async (req, res, next) => {
     const errors = validationResult(req);
-    if(!errors.isEmpty()) {
-        throw new HttpError('Input inválido', 422);
+    if (!errors.isEmpty()) {
+        next(new HttpError('Input inválido', 422));
     }
 
-    const { title, description, coordinates, address, creator } = req.body;
+    const { title, description, address, creator } = req.body;
+
+    let coordinates;
+    try {
+        coordinates = await getCoordsForAddress(address);
+    } catch (error) {
+        return next(error);
+    }
 
     const createdPlace = {
         id: uuid(),
@@ -62,13 +70,13 @@ const createPlace = (req, res, next) => {
     };
 
     DUMMY_PLACES.push(createPlace);
-    
-    res.status(201).json({place: createdPlace});
+
+    res.status(201).json({ place: createdPlace });
 };
 
 const updatePlace = (req, res, next) => {
     const errors = validationResult(req);
-    if(!errors.isEmpty()) {
+    if (!errors.isEmpty()) {
         throw new HttpError('Input inválido', 422);
     }
 
@@ -82,13 +90,13 @@ const updatePlace = (req, res, next) => {
 
     DUMMY_PLACES[placeIndex] = updatedPlace;
 
-    res.status(200).json({place: updatedPlace});
+    res.status(200).json({ place: updatedPlace });
 };
 
 const deletePlace = (req, res, next) => {
     const placeId = req.params.pid;
 
-    if(!DUMMY_PLACES.find(p => p.id === placeId)) {
+    if (!DUMMY_PLACES.find(p => p.id === placeId)) {
         throw new HttpError('No se ha podido encontrar ningún lugar con esa Id', 404)
     }
 
