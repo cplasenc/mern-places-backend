@@ -2,6 +2,7 @@ const uuid = require('uuid').v4;
 const HttpError = require('../model/http-error');
 const { validationResult } = require('express-validator');
 const getCoordsForAddress = require('../util/location');
+const Place = require('../model/place');
 
 let DUMMY_PLACES = [
     {
@@ -60,16 +61,23 @@ const createPlace = async (req, res, next) => {
         return next(error);
     }
 
-    const createdPlace = {
-        id: uuid(),
+    const createdPlace = new Place({
         title,
         description,
-        location: coordinates,
         address,
+        location: coordinates,
+        image: 'https://s3-us-west-2.amazonaws.com/lasaga-blog/media/images/grupo_imagen.original.jpg',
         creator
-    };
+    });
 
-    DUMMY_PLACES.push(createPlace);
+    try {
+        await createdPlace.save();
+    } catch (err) {
+        const error = new HttpError(
+            'Error al crear un lugar', 500
+        );
+        return next(error);
+    }
 
     res.status(201).json({ place: createdPlace });
 };
