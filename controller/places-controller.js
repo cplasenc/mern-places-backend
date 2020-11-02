@@ -4,7 +4,7 @@ const { validationResult } = require('express-validator');
 const getCoordsForAddress = require('../util/location');
 const Place = require('../model/place');
 
-/*let DUMMY_PLACES = [
+let DUMMY_PLACES = [
     {
         id: 'p1',
         title: 'Empire State Building',
@@ -16,7 +16,7 @@ const Place = require('../model/place');
         address: '20 W 34th St, New York, NY 10001',
         creator: 'u1'
     }
-];*/
+];
 
 const getPlaceById = async (req, res, next) => {
     const placeId = req.params.pid;
@@ -34,21 +34,27 @@ const getPlaceById = async (req, res, next) => {
         return next(error);
     }
 
-    res.json({ place: place.toObject( {getters: true }) });
+    res.json({ place: place.toObject({ getters: true }) });
 };
 
-const getPlacesByUserId = (req, res, next) => {
+const getPlacesByUserId = async (req, res, next) => {
     const userId = req.params.uid;
-    const places = DUMMY_PLACES.filter(p => {
-        return p.creator === userId;
-    });
+
+    let places;
+    try {
+        places = await Place.find({ creator: userId });
+
+    } catch(err) {
+        const error = new HttpError('Error al cargar. Inténtalo de nuevo', 500);
+        return next(error);
+    }
 
     if (!places || places.length === 0) {
         //return res.status(404).json({ message: 'No se ha encontrado ningún lugar' });
         return next(new HttpError('No se ha encontrado ningún lugar', 404));
     }
 
-    res.json({ places });
+    res.json({ places: places.map(place => place.toObject( { getters: true })) });
 };
 
 const createPlace = async (req, res, next) => {
