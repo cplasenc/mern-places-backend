@@ -20,7 +20,7 @@ server.use((req, res, next) => {
 });
 
 server.use((error, req, res, next) => {
-    if(res.headersSent) {
+    if(res.headerSent) {
         return next(error);
     }
     res.status(error.code || 500);
