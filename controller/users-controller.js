@@ -12,8 +12,15 @@ const DUMMY_USERS = [
     }
 ]
 
-const getUsers = (req, res, next) => {
-    res.json({users: DUMMY_USERS});
+const getUsers = async (req, res, next) => {
+    let users;
+    try {
+        users = await User.find({}, '-password');
+    } catch(err) {
+        const error = new HttpError('Error al recuperar usuarios', 500);
+        return next(error);
+    }
+    res.json({users: users.map(user => user.toObject({ getters: true }))});
 };
 
 const signup = async (req, res, next) => {
@@ -21,7 +28,7 @@ const signup = async (req, res, next) => {
     if(!errors.isEmpty()) {
         return  next(new HttpError('Input inválido', 422));
     }
-    const { name, email, password, places } = req.body;
+    const { name, email, password } = req.body;
 
     let existingUser;
     try {
@@ -41,7 +48,7 @@ const signup = async (req, res, next) => {
         email,
         image: 'https://s3-us-west-2.amazonaws.com/lasaga-blog/media/images/grupo_imagen.original.jpg',
         password,
-        places
+        places: []
     });
 
     try {
