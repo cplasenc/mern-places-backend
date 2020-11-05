@@ -12,7 +12,7 @@ const server = express();
 server.use(bodyParser.json());
 
 server.use('/api/places', placesRoutes);
-server.use('api/users', usersRoutes);
+server.use('/api/users', usersRoutes);
 
 server.use((req, res, next) => {
     const error = new HttpError('No se ha encontrada nada en esta dirección', 404);
