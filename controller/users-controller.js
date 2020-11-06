@@ -1,16 +1,6 @@
-const uuid = require('uuid').v4;
 const { validationResult } = require('express-validator');
 const HttpError = require('../model/http-error');
 const User = require('../model/user');
-
-const DUMMY_USERS = [
-    {
-        id: 'u1',
-        name: 'nombre',
-        email: 'test@mail.com',
-        password: 'testers'
-    }
-]
 
 const getUsers = async (req, res, next) => {
     let users;
@@ -28,6 +18,7 @@ const signup = async (req, res, next) => {
     if(!errors.isEmpty()) {
         return  next(new HttpError('Input inválido', 422));
     }
+    
     const { name, email, password } = req.body;
 
     let existingUser;

@@ -1,4 +1,3 @@
-const uuid = require('uuid').v4;
 const HttpError = require('../model/http-error');
 const { validationResult } = require('express-validator');
 const getCoordsForAddress = require('../util/location');
@@ -6,20 +5,6 @@ const Place = require('../model/place');
 const User = require('../model/user');
 const mongooseUniqueValidator = require('mongoose-unique-validator');
 const mongoose = require('mongoose');
-
-/*let DUMMY_PLACES = [
-    {
-        id: 'p1',
-        title: 'Empire State Building',
-        description: 'One of the most famous sky scrapers in the world!',
-        location: {
-            lat: 40.7484474,
-            lng: -73.9871516
-        },
-        address: '20 W 34th St, New York, NY 10001',
-        creator: 'u1'
-    }
-];*/
 
 const getPlaceById = async (req, res, next) => {
     const placeId = req.params.pid;
@@ -53,7 +38,6 @@ const getPlacesByUserId = async (req, res, next) => {
     }
 
     if (!places || places.length === 0) {
-        //return res.status(404).json({ message: 'No se ha encontrado ningún lugar' });
         return next(new HttpError('No se ha encontrado ningún lugar', 404));
     }
 
@@ -87,12 +71,12 @@ const createPlace = async (req, res, next) => {
     let user;
     try {
         user = await User.findById(creator);
-    } catch(err) {
+    } catch (err) {
         const error = new HttpError('Error al crear lugar', 500);
         return next(error);
     }
 
-    if(!user) {
+    if (!user) {
         const error = new HttpError('No se ha podido encontrar un usuario con esa Id', 404);
         return next(error);
     }
@@ -100,9 +84,9 @@ const createPlace = async (req, res, next) => {
     try {
         const sess = await mongoose.startSession();
         sess.startTransaction();
-        await createdPlace.save( { session: sess } );
+        await createdPlace.save({ session: sess });
         user.places.push(createdPlace);
-        await user.save( { session: sess });
+        await user.save({ session: sess });
         await sess.commitTransaction();
 
     } catch (err) {
@@ -156,7 +140,7 @@ const deletePlace = async (req, res, next) => {
         return next(error);
     }
 
-    if(!place) {
+    if (!place) {
         const error = new HttpError('No se ha podido encontrar un lugar para esta Id', 404);
         return next(error);
     }
