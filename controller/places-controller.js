@@ -150,14 +150,24 @@ const deletePlace = async (req, res, next) => {
 
     let place;
     try {
-        place = await place.findById(placeId);
+        place = await Place.findById(placeId).populate('creator');
     } catch (err) {
         const error = new HttpError('Error al eliminar', 500);
         return next(error);
     }
 
+    if(!place) {
+        const error = new HttpError('No se ha podido encontrar un lugar para esta Id', 404);
+        return next(error);
+    }
+
     try {
-        await place.remove();
+        const sess = await mongoose.startSession();
+        sess.startTransaction();
+        await place.remove({ session: sess });
+        place.creator.places.pull(place);
+        await place.creator.save({ session: sess });
+        await sess.commitTransaction();
     } catch (err) {
         const error = new HttpError('Error al eliminar', 500);
         return next(error);
