@@ -3,7 +3,6 @@ const { validationResult } = require('express-validator');
 const getCoordsForAddress = require('../util/location');
 const Place = require('../model/place');
 const User = require('../model/user');
-const mongooseUniqueValidator = require('mongoose-unique-validator');
 const mongoose = require('mongoose');
 
 const getPlaceById = async (req, res, next) => {
