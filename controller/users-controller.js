@@ -37,7 +37,7 @@ const signup = async (req, res, next) => {
     const createdUser = new User({
         name, 
         email,
-        image: 'https://s3-us-west-2.amazonaws.com/lasaga-blog/media/images/grupo_imagen.original.jpg',
+        image: req.file.path,
         password,
         places: []
     });
