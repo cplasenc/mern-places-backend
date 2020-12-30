@@ -5,12 +5,15 @@ const placesRoutes = require('./routes/places-routes');
 const usersRoutes = require('./routes/users-routes');
 const mongoose = require('mongoose');
 const fs = require('fs');
+const path = require('path');
 
 const DB_STRING = process.env.DB_STRING;
 
 const server = express();
 
 server.use(bodyParser.json());
+
+server.use('/uploads/images', express.static(path.join('uploads', 'images')));
 
 server.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
