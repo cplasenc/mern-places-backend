@@ -4,6 +4,7 @@ const getCoordsForAddress = require('../util/location');
 const Place = require('../model/place');
 const User = require('../model/user');
 const mongoose = require('mongoose');
+const fs = require('fs');
 
 const getPlaceById = async (req, res, next) => {
     const placeId = req.params.pid;
@@ -144,6 +145,8 @@ const deletePlace = async (req, res, next) => {
         return next(error);
     }
 
+    const imagePath = place.image;
+
     try {
         const sess = await mongoose.startSession();
         sess.startTransaction();
@@ -155,6 +158,10 @@ const deletePlace = async (req, res, next) => {
         const error = new HttpError('Error al eliminar', 500);
         return next(error);
     }
+
+    fs.unlink(imagePath, err => {
+        console.log(err);
+    });
 
     res.status(200).json({ message: 'Lugar eliminado' });
 };
