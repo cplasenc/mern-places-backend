@@ -63,7 +63,7 @@ const createPlace = async (req, res, next) => {
         description,
         address,
         location: coordinates,
-        image: 'https://s3-us-west-2.amazonaws.com/lasaga-blog/media/images/grupo_imagen.original.jpg',
+        image: req.file.path,
         creator
     });
 
