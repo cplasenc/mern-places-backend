@@ -2,6 +2,7 @@ const { validationResult } = require('express-validator');
 const HttpError = require('../model/http-error');
 const User = require('../model/user');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const getUsers = async (req, res, next) => {
     let users;
@@ -58,7 +59,19 @@ const signup = async (req, res, next) => {
         return next(error);
     };
 
-    res.status(201).json({user: createdUser.toObject({ getters: true })});
+    let token;
+    try {
+        token = jwt.sign(
+            { userId: createdUser.id, email: createdUser.email }, 
+            'token_secreto_no_compartir',
+            {expiresIn: '1h'}
+        );            
+    } catch (err) {
+        const error = new HttpError('Error al crear usuario', 500);
+        return next(error); 
+    }
+
+    res.status(201).json({user: createdUser.id, email: createdUser.email, token: token });
 };
 
 const login = async (req, res, next) => {
@@ -94,7 +107,19 @@ const login = async (req, res, next) => {
         }
     }
 
-    res.json({message: 'Sesión iniciada', user: existingUser.toObject({ getters: true })});
+    let token;
+    try {
+        token = jwt.sign(
+            { userId: existingUser.id, email: existingUser.email }, 
+            'token_secreto_no_compartir',
+            {expiresIn: '1h'}
+        );            
+    } catch (err) {
+        const error = new HttpError('Error al iniciar sesión', 500);
+        return next(error); 
+    }
+
+    res.json({ userId: existingUser.id, email: existingUser.email, token: token });
 };
 
 exports.getUsers = getUsers;
