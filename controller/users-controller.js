@@ -86,7 +86,7 @@ const login = async (req, res, next) => {
     }
 
     if(!existingUser) {
-        const error = new HttpError('El email o la contraseña no son correctos', 401);
+        const error = new HttpError('El email o la contraseña no son correctos', 403);
         return next(error);
     }
 

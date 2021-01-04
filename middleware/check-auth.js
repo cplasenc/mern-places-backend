@@ -14,7 +14,7 @@ module.exports = (req, res, next) => {
         req.userData = { userId: decodedToken.userId };
         next();
     } catch (err) {
-        const error = new HttpError('Error al autentificar', 401);
+        const error = new HttpError('Error al autentificar', 403);
         return next(error);
     }
 };

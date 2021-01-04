@@ -150,6 +150,11 @@ const deletePlace = async (req, res, next) => {
         return next(error);
     }
 
+    if(place.creator.id !== req.userData.userId) {
+        const error = new HttpError('No tienes permisos para eliminar este lugar', 401);
+        return next(error);
+    }
+
     const imagePath = place.image;
 
     try {
