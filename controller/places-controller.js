@@ -116,6 +116,11 @@ const updatePlace = async (req, res, next) => {
         return next(error);
     }
 
+    if(place.creator.toString() !== req.userData.userId) {
+        const error = new HttpError('No tienes permisos para editar este lugar', 401);
+        return next(error);
+    }
+
     place.title = title;
     place.description = description;
 
