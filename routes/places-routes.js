@@ -8,7 +8,7 @@ const checkAuth = require('../middleware/check-auth');
 
 router.get('/:pid', placesController.getPlaceById);
 
-router.get('user/:uid', placesController.getPlacesByUserId);
+router.get('/user/:uid', placesController.getPlacesByUserId);
 
 router.use(checkAuth);
 
